@@ -19,7 +19,7 @@ import lombok.Setter;
 @PrimaryKeyJoinColumn(name = "staff_id")
 public class Technician extends Staff{
     @Column(name = "level")
-    private String level;
+    private String level; 
 
     @OneToMany(mappedBy = "technician")
     private List<Contract> contracts;

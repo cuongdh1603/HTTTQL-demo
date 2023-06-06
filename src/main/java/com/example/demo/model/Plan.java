@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -9,7 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tbl_plans")
 public class Plan {
@@ -38,6 +46,12 @@ public class Plan {
 
     @OneToMany(mappedBy = "plan")
     private List<Contract> contracts;
+
+    public String getFormatPrice(){
+		  NumberFormat myFormat = NumberFormat.getInstance();
+		  myFormat.setGroupingUsed(true);
+		  return myFormat.format(price);
+	}
 }
 /*
 Table: tbl_plans

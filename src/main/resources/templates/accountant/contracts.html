@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Danh sách hợp đồng</title>
+    <link rel="stylesheet" th:href="@{/css/mdb.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/mdb.min.css.map}" />
+    <link rel="stylesheet" th:href="@{/css/mdb.rtl.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/mdb.rtl.min.css.map}" />
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css}" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/banner.css}" /> <!---->
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css}">
+    <!---->
+    <link rel="stylesheet" th:href="@{/css/base.css}" />
+    <link rel="stylesheet"
+        th:href="@{https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css}">
+    <script defer th:src="@{https://code.jquery.com/jquery-3.5.1.js}"></script>
+    <script defer th:src="@{https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js}"></script>
+    <script defer th:src="@{https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js}"></script>
+    <script defer th:src="@{/js/function-datatable.js}"></script>
+</head>
+
+<body style="background-color: rgb(247, 247, 247);">
+    <div th:replace="~{accountant/fragments/header :: header}" />
+    <div th:if="${successPayment != null}" id="liveAlertPlaceholder"
+        style="margin-left: auto; margin-right: auto; width: 30rem;">
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <div style="margin-left:50px;" th:text="${successPayment}"></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- Searh, filter -->
+    <div style="background-color: rgb(255, 255, 255); padding: 20px;margin:30px">
+        <div class="d-flex justify-content-around">
+            <div style="margin-bottom: 20px;">
+                <h4 class="border-cus">Danh sách hợp đồng</h4>
+            </div>
+            <div>
+                <form class="d-flex" role="search">
+                    <input id="data-search-input" class="form-control" style="width: 50ch; margin-right: 10px;"
+                        type="text" placeholder="Tìm kiếm hợp đồng" aria-label="Search">
+                    <button class="button-register" style="font-size: 15px;" type="submit">Tìm kiếm</button>
+                </form>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <p>Trạng thái Xử lý</p>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-end">
+                        <select id="selectStatus" class="form-select">
+                            <option value="">Tất cả</option>
+                            <!-- <option value="xử lý">Chưa xử lý</option> -->
+                            <!-- <option value="phân công">Đã phân công</option>
+                            <option value="xác nhận">Đã xác nhận</option> -->
+                            <option value="lắp đặt">Đã lắp đặt</option>
+                            <option value="thanh toán">Đã thanh toán</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- List contract -->
+    <div style="background-color: rgb(255, 255, 255); padding: 20px;margin: 30px;">
+        <br>
+        <div style="margin-left: auto; margin-right: auto; width: fit-content;">
+            <table id="listContract" class="table table-hover d-sm-table-cell"
+                style="font-size: 17px;margin-left: auto; margin-right: auto;">
+                <thead>
+                    <tr class="" style="background-color: rgb(74, 98, 132);color: white;">
+                        <th style="width: 300px;" scope="col">Tên khách</th>
+                        <th id="id_contract" style="width: 250px;" scope="col">Mã hợp đồng</th>
+                        <th style="width: 250px;" scope="col">Lịch hẹn lắp đặt</th>
+                        <th style="width: 250px;" scope="col">Chi phí</th>
+                        <th style="width: 250px;" scope="col">Trạng thái xử lý</th>
+                        <th style="width: 150px;" scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="contract : ${contracts}">
+                        <td class="align-middle" th:text="${contract.client.name}"></td>
+                        <td class="align-middle" th:text="${contract.code}"></td>
+                        <td class="align-middle"
+                            th:text="${#dates.format(contract.appointTime,'dd/MM/yyyy')}"></td>
+                        <td class="align-middle" th:text="${contract.plan.getFormatPrice()+' VNĐ'}"></td>
+                        <td class="align-middle">
+                            <p th:if="${contract.status} == 0" th:text="'Chưa xử lý'"></p>
+                            <p th:if="${contract.status} == 1" th:text="'Đã phân công'"></p>
+                            <p th:if="${contract.status} == 2" th:text="'Đã xác nhận'"></p>
+                            <p th:if="${contract.status} == 3" th:text="'Đã lắp đặt'"></p>
+                            <p th:if="${contract.status} == 4" th:text="'Đã thanh toán'"></p>
+                        </td>
+                        <td class="align-middle">
+                            <a th:if="${contract.status} == 3" 
+                                th:data-id="${contract.id}" 
+                                th:data-code="${contract.code}"
+                                th:data-client-name="${contract.client.name}"
+                                th:data-client-phone="${contract.client.phone}"
+                                th:data-client-address="${contract.client.address}"
+                                th:data-create-time="${#dates.format(contract.registerTime,'dd/MM/yyyy HH:mm:ss')}"
+                                th:data-appoint-time="${#dates.format(contract.appointTime,'dd/MM/yyyy')}"
+                                th:data-note="${contract.note}" th:data-plan-name="${contract.plan.name}"
+                                th:data-plan-speed="${contract.plan.speed+' Mbp/s'}"
+                                th:data-plan-period="${contract.plan.period+' tháng'}"
+                                th:data-price="${contract.plan.price}"
+                                th:data-plan-price="${contract.plan.getFormatPrice()+' VNĐ'}"
+                                th:data-plan-note="${contract.plan.note}" 
+                                th:data-tech-name="${contract.technician.name}"
+                                onclick="showInstalledModalDialog(this.getAttribute('data-id'),
+                                this.getAttribute('data-code'),
+                                this.getAttribute('data-client-name'),
+                                this.getAttribute('data-client-phone'),
+                                this.getAttribute('data-client-address'),
+                                this.getAttribute('data-create-time'),
+                                this.getAttribute('data-appoint-time'),
+                                this.getAttribute('data-note'),
+                                this.getAttribute('data-plan-name'),
+                                this.getAttribute('data-plan-speed'),
+                                this.getAttribute('data-plan-period'),
+                                this.getAttribute('data-price'),
+                                this.getAttribute('data-plan-price'),
+                                this.getAttribute('data-plan-note'),
+                                this.getAttribute('data-tech-name')
+                                )" href="#">
+                                <img type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                    style="margin-left: 20px; width: 60px;" th:src="@{/img/edit.png}" alt="">
+                            </a>
+                            <!-- <a th:if="${contract.status} == 2" 
+                                th:data-id="${contract.id}" 
+                                th:data-code="${contract.code}"
+                                th:data-client-name="${contract.client.name}"
+                                th:data-client-phone="${contract.client.phone}"
+                                th:data-client-address="${contract.client.address}"
+                                th:data-create-time="${#dates.format(contract.registerTime,'dd/MM/yyyy HH:mm:ss')}"
+                                th:data-appoint-time="${#dates.format(contract.appointTime,'dd/MM/yyyy')}"
+                                th:data-note="${contract.note}" th:data-plan-name="${contract.plan.name}"
+                                th:data-plan-speed="${contract.plan.speed+' Mbp/s'}"
+                                th:data-plan-period="${contract.plan.period+' tháng'}"
+                                th:data-plan-price="${contract.plan.getFormatPrice()+' VNĐ'}"
+                                th:data-plan-note="${contract.plan.note}" 
+                                th:data-tech-name="${contract.technician.name}"
+                                onclick="showConfirmModalDialog(this.getAttribute('data-id'),
+                                this.getAttribute('data-code'),
+                                this.getAttribute('data-client-name'),
+                                this.getAttribute('data-client-phone'),
+                                this.getAttribute('data-client-address'),
+                                this.getAttribute('data-create-time'),
+                                this.getAttribute('data-appoint-time'),
+                                this.getAttribute('data-note'),
+                                this.getAttribute('data-plan-name'),
+                                this.getAttribute('data-plan-speed'),
+                                this.getAttribute('data-plan-period'),
+                                this.getAttribute('data-plan-price'),
+                                this.getAttribute('data-plan-note'),
+                                this.getAttribute('data-tech-name')
+                                )" href="#">
+                                <img type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                    style="margin-left: 20px; width: 60px;" th:src="@{/img/edit.png}" alt="">
+                            </a> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+    </div>
+    <div th:replace="~{accountant/fragments/footer :: footer}" />
+    <!-- pop up after click edit -->
+    <div class="modal fade modal-xl" id="installedModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="paidForm" action="" method="post">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin chi tiết</h1>
+                        <button id="clearForm" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <span id="contractId" hidden></span>
+                        <br>
+                        <div class="d-flex justify-content-center">
+                            <h3>Xác nhận thanh toán</h3>
+                        </div>
+                        <div class="d-flex justify-content-around" style="margin: 30px;">
+                            <div class="d-flex justify-content-start">
+                                <div style="margin-right: 4pc;">
+                                    <p style="font-size: 17px; font-weight: bold;">Trạng thái : </p>
+                                </div>
+                                <div style="margin-right: 4pc;">
+                                    <p>Đã lắp đặt</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h6>Mã đơn: <span id="code"></span></h6>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-around" style="margin-left: 75px; margin-right: 50px; ">
+                                <!-- customer information -->
+                                <div style="padding-right: 75px;">
+                                    <h6>Thông tin khách hàng</h6>
+                                    <p>Họ tên: <span id="clientName"></span></p>
+                                    <p>Số điện thoại: <span id="clientPhone"></span></p>
+                                    <p>Địa chỉ: <span id="clientAddress"></span></p>
+                                    <p>Thời gian gửi đơn: <span id="createTime"></span></p>
+                                    <h6>Ngày dự kiến muốn lắp: <span id="appointTime"></span></h6>
+                                    <h6>Lời nhắn: <span id="note"></span></h6>
+                                </div>
+                                <!-- code,clientName,clientPhone,clientAddress,createTime,appointTime,note,planName,planSpeed,planPeriod,planPrice,planNote-->
+                                <div style="padding-right: 75px;">
+                                    <h6> Thông tin gói mạng</h6>
+                                    <p>Tên gói mạng: <span id="planName"></span></p>
+                                    <p>Tốc độ: <span id="planSpeed"></span></p>
+                                    <p>Thời hạn: <span id="planPeriod"></span></p>
+                                    <span id="price" hidden></span>
+                                    <p>Đơn giá: <span id="planPrice"></span></p>
+                                    <p>Mô tả: <span id="planNote"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="d-flex justify-content-around">
+                            <div class="d-flex justify-content-start">
+                                <div style="margin-right: 1pc;">
+                                    <p style="font-size: 17px; font-weight: bold;">Kỹ thuật viên : </p>
+                                </div>
+                                <div>
+                                    <span id="technicianName"></span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div style="margin-right: 1pc;margin-left: 1pc;">
+                                  <p style="font-size: 17px; font-weight: bold;">Số tiền khách hàng thanh toán : </p>
+                                </div>
+                                <div class="input-group" style="margin-right: 1pc;">
+                                  <input type="number" id="payAmount" max="1000000000" name="payAmount" class="form-control" placeholder="">
+                                  <span class="input-group-text">VNĐ</span>
+                                </div>   
+                            </div>
+                        </div>
+                        <div style="margin-left: 60%;margin-right: 10%;">
+                            <p style="font-size: 14px;color: red;" class="alert alert-danger" id="error-message"></p>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-dark" value="Thanh toán">
+                        <button type="button" class="btn btn-light" id="hideForm" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="modal fade modal-xl" id="confirmModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="" method="post">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin chi tiết</h1>
+                        <button id="clearForm-1" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="" method="post">
+                        <div class="modal-body">
+                            <span id="contractId-1" hidden></span>
+                            <br>
+                            <div class="d-flex justify-content-center">
+                                <h3>Phân công kỹ thuật viên</h3>
+                            </div>
+                            <div class="d-flex justify-content-around" style="margin: 30px;">
+                                <div class="d-flex justify-content-start">
+                                    <div style="margin-right: 4pc;">
+                                        <p style="font-size: 17px; font-weight: bold;">Trạng thái : </p>
+                                    </div>
+                                    <div style="margin-right: 4pc;">
+                                        <p>Đã xác nhận</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6>Mã đơn: <span id="code-1"></span></h6>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-around" style="margin-left: 75px; margin-right: 50px; ">
+                                    
+                                    <div style="padding-right: 75px;">
+                                        <h6>Thông tin khách hàng</h6>
+                                        <p>Họ tên: <span id="clientName-1"></span></p>
+                                        <p>Số điện thoại: <span id="clientPhone-1"></span></p>
+                                        <p>Địa chỉ: <span id="clientAddress-1"></span></p>
+                                        <p>Thời gian gửi đơn: <span id="createTime-1"></span></p>
+                                        <h6>Ngày dự kiến muốn lắp: <span id="appointTime-1"></span></h6>
+                                        <h6>Lời nhắn: <span id="note-1"></span></h6>
+                                    </div>
+                                    
+                                    <div style="padding-right: 75px;">
+                                        <h6> Thông tin gói mạng</h6>
+                                        <p>Tên gói mạng: <span id="planName-1"></span></p>
+                                        <p>Tốc độ: <span id="planSpeed-1"></span></p>
+                                        <p>Thời hạn: <span id="planPeriod-1"></span></p>
+                                        <p>Đơn giá: <span id="planPrice-1"></span></p>
+                                        <p>Mô tả: <span id="planNote-1"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="d-flex justify-content-around">
+                                <div class="d-flex justify-content-start">
+                                    <div style="margin-right: 3pc;">
+                                        <p style="font-size: 17px; font-weight: bold;">Kỹ thuật viên : </p>
+                                    </div>
+                                    <div>
+                                        <span id="technicianName-1"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <div class="modal-footer">
+                            <a type="button" id="installComplete" class="btn btn-primary">Hoàn tất lắp đặt</a>
+                            <button type="button" class="btn btn-light" id="hideForm-1" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div> -->
+        <script defer th:src="@{https://use.fontawesome.com/releases/v5.15.4/js/solid.js}"
+            integrity="sha384-/BxOvRagtVDn9dJ+JGCtcofNXgQO/CCCVKdMfL115s3gOgQxWaX/tSq5V8dRgsbc"
+            crossorigin="anonymous"></script>
+        <script defer th:src="@{https://use.fontawesome.com/releases/v5.15.4/js/fontawesome.js}"
+            integrity="sha384-dPBGbj4Uoy1OOpM4+aRGfAOc0W37JkROT+3uynUgTHZCHZNMHfGXsmmvYTffZjYO"
+            crossorigin="anonymous"></script>
+        <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js}"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+        <script type="text/javascript" th:src="@{/js/mdb.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/mdb.min.js.map}"></script>
+        <!-- alerts process -->
+        <script>
+            
+            function showInstalledModalDialog(id, code, clientName, clientPhone, clientAddress, createTime, appointTime, note, planName, planSpeed, planPeriod, price, planPrice, planNote, technicianName) {
+                $('#contractId').text(id);
+                $('#code').text(code);
+                $('#clientName').text(clientName);
+                $('#clientPhone').text(clientPhone);
+                $('#clientAddress').text(clientAddress);
+                $('#createTime').text(createTime);
+                $('#appointTime').text(appointTime);
+                $('#note').text(note);
+                $('#planName').text(planName);
+                $('#planSpeed').text(planSpeed);
+                $('#planPeriod').text(planPeriod);
+                $('#price').text(price);
+                $('#planPrice').text(planPrice);
+                if (typeof planNote === "string" && planNote.trim() === "") {
+                    $('#planNote').text('Không có');
+                }
+                else{
+                    $('#planNote').text(planNote);
+                }
+                $('#technicianName').text(technicianName);
+                $('#installedModal').modal('show');
+                $("#hideForm, #clearForm").click(function () {
+                    $("#installedModal").modal('hide');
+                });
+            }
+            function showConfirmModalDialog(id, code, clientName, clientPhone, clientAddress, createTime, appointTime, note, planName, planSpeed, planPeriod, planPrice, planNote, technicianName) {
+                $('#contractId-1').text(id);
+                $('#code-1').text(code);
+                $('#clientName-1').text(clientName);
+                $('#clientPhone-1').text(clientPhone);
+                $('#clientAddress-1').text(clientAddress);
+                $('#createTime-1').text(createTime);
+                $('#appointTime-1').text(appointTime);
+                $('#note-1').text(note);
+                $('#planName-1').text(planName);
+                $('#planSpeed-1').text(planSpeed);
+                $('#planPeriod-1').text(planPeriod);
+                $('#planPrice-1').text(planPrice);
+                $('#planNote-1').text(planNote);
+                $('#technicianName-1').text(technicianName);
+                $('#confirmModal').modal('show');
+                $('#installComplete').attr('href', '/technician/install/' + id);
+                $("#hideForm-1, #clearForm-1").click(function () {
+                    $("#confirmModal").modal('hide');
+                });
+            }
+        </script>
+</body>
+
+</html>

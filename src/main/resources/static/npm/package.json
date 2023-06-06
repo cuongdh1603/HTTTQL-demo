@@ -1,0 +1,16 @@
+{
+  "name": "bootstrap-npm",
+  "version": "6.2.0",
+  "homepage": "https://mdbootstrap.com/docs/standard/",
+  "license": "MIT",
+  "dependencies": {
+    "@popperjs/core": "^2.11.7"
+  },
+  "description": "MDB5 Version: FREE 6.2.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": ""
+}

@@ -1,0 +1,120 @@
+.banner-container {
+    display: flex;
+    align-items: left;
+    justify-content: flex-start;
+}
+
+.banner-container .banner {
+    background-size: cover;
+    width: 100%;
+    height: 50vh;
+    background-image: url(../img/banner2.jpg);
+    border-radius: 5px;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    overflow: hidden;
+    background-repeat: no-repeat;
+}
+
+.banner-container .banner .content2 {
+    flex: 1 1 250px;
+    text-align: left;
+    padding: 100px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: rgb(21, 37, 59);
+    font-size: 40px;
+}
+
+.banner-container .banner .content2 span {
+    color: #eee;
+    font-size: 25px;
+}
+
+.button {
+    background-color: rgb(21, 37, 59);
+    border-radius: 0.6pc;
+    font-size: 20px;
+    color: #eee;
+    padding: 10px;
+    word-spacing: 2px;
+    width: fit-content;
+}
+
+.button-register {
+    background-color: rgb(21, 37, 59);
+    border-radius: 0.6pc;
+    font-size: 20px;
+    color: #eee;
+    padding: 10px;
+    word-spacing: 2px;
+}
+
+.button-register-pakage {
+    background-color: rgb(21, 37, 59);
+    border-radius: 0.6pc;
+    font-size: 20px;
+    color: #eee;
+    word-spacing: 5px;
+}
+
+.border-cus {
+    border-bottom: 2px solid rgb(245, 245, 245);
+}
+
+
+.dropdown {
+    width: fit-content;
+    border-color: black !important;
+    border: 2px;
+}
+
+.btn2 {
+    color: black !important;
+    border: 60px !important;
+    border: 1px solid rgb(21, 37, 59);
+    width: fit-content;
+}
+
+.dropdown-menu {
+    border-radius: 2px;
+}
+
+.dropdown-item:focus {
+    background-color: rgb(21, 37, 59);
+}
+
+.modal-backdrop {
+    display: none;
+}
+
+/* .dropdown-item:active{
+    background-color:rgb(21, 37, 59);
+} */
+
+.dataTables_filter {
+    display: none;
+}
+
+
+option:hover {
+    background-color: rgb(21, 37, 59) !important;
+    color: aliceblue;
+}
+
+
+div.dataTables_paginate ul.pagination {
+    margin-top: 24px !important;
+}
+
+#listContract_length {
+    margin-bottom: 24px !important;
+}
+
+.active>.page-link {
+    background-color: rgb(21, 37, 59) !important;
+    color: white !important;
+}

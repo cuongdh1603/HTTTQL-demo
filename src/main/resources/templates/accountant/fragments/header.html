@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- Navigation bar -->
+    <header th:fragment="header">
+        <nav class="border-bottom" style="border-radius: 3%;">
+            <ul class="nav nav-underline justify-content-between d-flex align-items-center"
+                style="margin-left: 2pc; margin-right: 2pc;">
+                <li class="nav-item">
+                    <a class="navbar-brand" href="#">
+                        <img th:src="@{/img/Airtel_logo.png}" alt="Bootstrap" width="120" height="40">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: 30px; color: rgb(21, 37, 59);" aria-current="page" th:href="@{/accountant}">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" style="font-size: 30px; color: rgb(21, 37, 59);" th:href="@{/accountant/contracts}">Danh sách lắp đặt</a>
+                </li>
+                <div class="nav-item d-flex justify-content-center">
+                    <li class="d-flex align-items-lg-center" style="margin-right: 1pc;">
+                        <a class="navbar-brand" href="#">
+                            <img th:src="@{/img/user.png}" alt="Bootstrap" width="40" height="40">
+                        </a>
+                    </li>
+                    <li class="d-flex align-items-center">
+                        <div class="dropdown me-auto mb-2 mb-lg-0">
+                            <div class=" dropdown-toggle" style="font-size: 18px;" data-bs-toggle="dropdown"
+                                aria-expanded="false" th:text="${username}">
+                                
+                            </div>
+                            <ul class="dropdown-menu button" style="background-color: rgb(255, 255, 255);">
+                                <li><button class="dropdown-item" type="button">Thông tin cá nhân</button></li>
+                                <li><button class="dropdown-item" type="button">Lịch sử</button></li>
+                                <li>
+                                    <button class="dropdown-item" type="button">
+                                        <a th:href="@{/logout}" style="text-decoration: none;">ĐĂNG XUẤT</a>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+    </header>
+</body>
+
+</html>

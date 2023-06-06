@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Thống kê</title>
+    <link rel="stylesheet" th:href="@{/css/mdb.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/mdb.min.css.map}" />
+    <link rel="stylesheet" th:href="@{/css/mdb.rtl.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/mdb.rtl.min.css.map}" />
+
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css}" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/banner.css}" />
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/css/base.css}" />
+    <!--High Chart-->
+    <link rel="stylesheet" th:href="@{/css/chart-column-with-drilldown.css}" />
+    <link rel="stylesheet" th:href="@{/css/chart-pie.css}" />
+    <link rel="stylesheet" th:href="@{/css/chart-basic-line.css}" />
+    <script th:src="@{https://code.jquery.com/jquery-3.5.1.js}"></script>
+    <script th:src="@{https://code.highcharts.com/highcharts.js}"></script>
+    <script th:src="@{https://code.highcharts.com/modules/series-label.js}"></script>
+    <script th:src="@{https://code.highcharts.com/modules/data.js}"></script>
+    <script th:src="@{https://code.highcharts.com/modules/drilldown.js}"></script>
+    <script th:src="@{https://code.highcharts.com/modules/exporting.js}"></script>
+    <script th:src="@{https://code.highcharts.com/modules/export-data.js}"></script>
+    <script th:src="@{https://code.highcharts.com/modules/accessibility.js}"></script>
+    <!--canvas-->
+    <script th:src="@{https://superal.github.io/canvas2image/canvas2image.js}"></script>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js}"></script>
+    <script th:src="@{/js/functionImage.js}"></script>
+</head>
+
+<body>
+    <!-- Navigation bar -->
+    <nav class="border-bottom" style="border-radius: 3%;">
+        <ul class="nav nav-underline justify-content-between d-flex align-items-center"
+            style="margin-left: 2pc; margin-right: 2pc;">
+            <li class="nav-item">
+                <a class="navbar-brand" href="#">
+                    <img src="img/Airtel_logo.png" alt="Bootstrap" width="120" height="40">
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" style="font-size: 20px; color: rgb(21, 37, 59);" aria-current="page" href="#">Trang
+                    chủ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" style="font-size: 20px; color: rgb(21, 37, 59);" href="#">Danh sách hợp đồng</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" style="font-size: 20px; color: rgb(21, 37, 59);" href="#">Danh sách hỗ trợ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  active " style="font-size: 20px; color: rgb(21, 37, 59);" href="#">Thống kê</a>
+            </li>
+            <div class="nav-item d-flex justify-content-center">
+                <li class="d-flex align-items-lg-center" style="margin-right: 1pc;">
+                    <a class="navbar-brand" href="#">
+                        <img src="img/user.png" alt="Bootstrap" width="40" height="40">
+                    </a>
+                </li>
+                <li class="d-flex align-items-center">
+                    <div class="dropdown me-auto mb-2 mb-lg-0">
+                        <div class=" dropdown-toggle" style="font-size: 18px;" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Lâm Tuệ
+                        </div>
+                        <ul class="dropdown-menu button" style="background-color: rgb(255, 255, 255);">
+                            <li><button class="dropdown-item" type="button">Thông tin cá nhân</button></li>
+                            <li><button class="dropdown-item" type="button">Lịch sử</button></li>
+                            <li><button class="dropdown-item" type="button">ĐĂNG XUẤT</button></li>
+                        </ul>
+                    </div>
+                </li>
+            </div>
+        </ul>
+    </nav>
+    <br>
+    <!--list surport-->
+    <div style="background-color: rgb(247, 247, 247); border-radius: 10px; padding: 20px; ">
+        <h2 style="margin-left: 100px;">Thống kê gói mạng</h2>
+        <br>
+        <div id="month" th:data-month="${month}" hidden>
+        </div>
+        <div id="year" th:data-year="${year}" hidden>
+        </div>
+        <div>
+            <!-- Filter, button-->
+            <div class="d-flex justify-content-around">
+                <div class="d-flex justify-content-around">
+                    <div style="margin-right: 4pc;">
+                        <p style="font-size: 17px; font-weight: bold;">Thời gian thống kê : </p>
+                    </div>
+                    <div style="margin-right: 4pc;">
+                        <div>
+                            <select id="selectStatus" class="form-select">
+                                <option>Tháng 1</option>
+                                <option>Tháng 2</option>
+                                <option>Tháng 3</option>
+                                <option>Tháng 4</option>
+                                <option>Tháng 5</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div>
+                            <select id="selectStatus" class="form-select">
+                                <option>Năm 2023</option>
+                                <option>Năm 2022</option>
+                                <option>Năm 2021</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a class="btn btn-success" th:href="@{/excel/plan}" style="font-size: 15px; margin-right: 4pc;"><i class="bi bi-file-earmark-excel-fill fa-lg"></i>   Xuất file excel</a>
+                    </div>
+                    <div>
+                    <a class="btn btn-primary" th:href="@{/word/plan}" style="font-size: 15px;"><i class="bi bi-file-earmark-word-fill fa-lg"></i>  Xuất file word</a>
+                    </div>
+                    <!-- <div>
+                        <button class="btn btn-primary" id="download" style="font-size: 15px;"><i class="bi bi-file-earmark-word-fill fa-lg"></i>  Xuất file word</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- statitc list surport  -->
+    <div>
+        <div class="d-flex justify-content-around">
+            <div class="p3"
+                style="background-color: rgb(247, 247, 247); padding: 100px 100px; margin-left: 50px; border-radius: 10px;">
+                <h5>Tổng số gói mạng đã được đăng kí: <span th:text="${planSum}"></span></h5>
+                
+            </div>
+            <div id="canvas1" class="w-75" style="background-color: rgb(247, 247, 247); margin-left: 50px; margin-right: 50px;">
+                <div>
+                    <h5 style="margin-left: 50px; margin-top: 10px;">Thống kê số gói mạng</h5>
+                    <div
+                        style="margin-top: 1rem; margin-bottom: 1rem;border: 0; border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                    </div>
+                </div>
+                <figure class="highcharts-figure-1">
+                    <div id="container-1" th:data-json-data="${jsonData_1}"></div>
+                </figure>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <!--list contract-->
+    <div style="background-color: rgb(247, 247, 247); border-radius: 10px; padding: 20px; ">
+        <h2 style="margin-left: 100px;">Danh sách hợp đồng</h2>
+        <br>
+        <div>
+            <!-- Filter, button-->
+            <div class="d-flex justify-content-around">
+                <div class="d-flex justify-content-around">
+                    <div style="margin-right: 4pc;">
+                        <p style="font-size: 17px; font-weight: bold;">Thời gian thống kê : </p>
+                    </div>
+                    <div style="margin-right: 4pc;">
+                        <div>
+                            <select id="selectStatus" class="form-select">
+                                <option>Tháng 1</option>
+                                <option>Tháng 2</option>
+                                <option>Tháng 3</option>
+                                <option>Tháng 4</option>
+                                <option>Tháng 5</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div>
+                            <select id="selectStatus" class="form-select">
+                                <option>Năm 2023</option>
+                                <option>Năm 2022</option>
+                                <option>Năm 2021</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a class="btn btn-success" th:href="@{/excel/contract}" style="font-size: 15px; margin-right: 4pc;"><i class="bi bi-file-earmark-excel-fill fa-lg"></i>   Xuất file excel</a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" th:href="@{/word/contract}" style="font-size: 15px;"><i class="bi bi-file-earmark-word-fill fa-lg"></i>  Xuất file word</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- statitc list contract  -->
+    <div>
+        <div class="d-flex justify-content-around">
+            <div class="p3"
+                style="background-color: rgb(247, 247, 247); padding: 100px 100px; margin-left: 50px; border-radius: 10px;">
+                <h5>Tổng danh sách hợp đồng: <span th:text="${contractSum}"></span></h5>
+                <!-- <p>Đơn chưa xử lý: <span>100</span></p>
+                <p>Đơn đang xử lý: <span>400</span></p>
+                <p>Đơn hủy: <span>10</span></p>
+                <p>Đơn đã hoàn tất: <span>200</span></p> -->
+            </div>
+            <div class="w-75" style="background-color: rgb(247, 247, 247); margin-left: 50px; margin-right: 50px;">
+                <div>
+                    <h5 style="margin-left: 50px; margin-top: 10px;">Thống kê danh sách hợp đồng</h5>
+                    <div
+                        style="margin-top: 1rem; margin-bottom: 1rem;border: 0; border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                    </div>
+                </div>
+                <figure class="highcharts-figure-2">
+                    <div id="container-2" th:data-json-data="${jsonData_2}"></div>
+                    <!-- <p class="highcharts-description-2">
+                        This pie chart shows how the chart legend can be used to provide
+                        information about the individual slices.
+                    </p> -->
+                </figure>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!--list Revenue-->
+    <div style="background-color: rgb(247, 247, 247); border-radius: 10px; padding: 20px; ">
+        <h2 style="margin-left: 100px;">Doanh thu</h2>
+        <br>
+        <div>
+            <!-- Filter, button-->
+            <div class="d-flex justify-content-around">
+                <div class="d-flex justify-content-around">
+                    <div style="margin-right: 4pc;">
+                        <p style="font-size: 17px; font-weight: bold;">Thời gian thống kê : </p>
+                    </div>
+                    <div style="margin-right: 4pc;">
+                        <div>
+                            <select id="selectStatus" class="form-select">
+                                <option>Tháng 1</option>
+                                <option>Tháng 2</option>
+                                <option>Tháng 3</option>
+                                <option>Tháng 4</option>
+                                <option>Tháng 5</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div>
+                            <select id="selectStatus" class="form-select">
+                                <option>Năm 2023</option>
+                                <option>Năm 2022</option>
+                                <option>Năm 2021</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a class="btn btn-success" th:href="@{/excel/revenue}" style="font-size: 15px; margin-right: 4pc;"><i class="bi bi-file-earmark-excel-fill fa-lg"></i>   Xuất file excel</a>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" th:href="@{/word/revenue}" style="font-size: 15px;"><i class="bi bi-file-earmark-word-fill fa-lg"></i>  Xuất file word</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- statitc revenue  -->
+    <div>
+        <div class="d-flex justify-content-around">
+            <div class="p1"
+                style="background-color: rgb(247, 247, 247); padding: 50px 50px; margin-left: 50px; border-radius: 10px;">
+                <h5>Tổng doanh thu tháng: <span th:text="${revenueSum + ' VNĐ'}"></span></h5>
+                <!-- <p>Chưa thu: <span>100</span> triệu</p>
+                <p>Đang xử lý: <span>400</span> triệu</p>
+                <p>Đơn hủy: <span>10</span> triệu</p>
+                <p>Đã thu: <span>200</span> triệu</p> -->
+            </div>
+            <div class="w-100" style="background-color: rgb(247, 247, 247); margin-left: 50px; margin-right: 50px;">
+                <div>
+                    <h5 style="margin-left: 50px; margin-top: 10px;">Thống kê danh sách hợp đồng</h5>
+                    <div
+                        style="margin-top: 1rem; margin-bottom: 1rem;border: 0; border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                    </div>
+                </div>
+                <figure class="highcharts-figure-3">
+                    <div id="container-3" th:data-dateSeries="${dateSeries}" th:data-unhandledSeries="${unhandledSeries}" th:data-processingSeries="${processingSeries}" th:data-gainedSeries="${gainedSeries}"></div>
+                    <p class="highcharts-description-3">
+                        <!-- Basic line chart showing trends in a dataset. This chart includes the
+                        <code>series-label</code> module, which adds a label to each line for
+                        enhanced readability. -->
+                    </p>
+                </figure>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="panel-body">
+        <canvas id="line-chart"></canvas>
+    </div>
+    <!-- footer -->
+    <footer>
+        <div class="footer-link__wrapper">
+            <div class="footer-social-area">
+                <a href="https://youtube.com" class="footer-social__icon footer-social__link">
+                    <i class="bi bi-facebook fa-xs"></i>
+                </a>
+                <a href="" class="footer-social__icon footer-social__link">
+                    <i class="bi bi-google fa-xs"></i>
+                </a>
+                <a href="" class="footer-social__icon footer-social__link">
+                    <i class="bi bi-youtube fa-xs"></i>
+                </a>
+                <a href="" class="footer-social__icon footer-social__link">
+                    <i class="bi bi-instagram fa-xs"></i>
+                </a>
+            </div>
+            <div class="footer-social__support">
+                <a href="" class="footer-social__link">
+                    Chính sách - Bảo mật
+                </a>
+                <a href="" class="footer-social__link">
+                    Trợ giúp
+                </a>
+                <a href="" class="footer-social__link">
+                    Chúng tôi
+                </a>
+            </div>
+        </div>
+        <div class="footer__desc">
+            Công ty TNHH Airtel Việt Nam - Km10, Đường Nguyễn Trãi, Q.Hà Đông, Hà Nội
+        </div>
+        <div class="footer__copyright">
+            Copyright <i class="bi bi-c-circle"></i> 2023 Airtel
+        </div>
+    </footer>
+    <script defer th:src="@{https://use.fontawesome.com/releases/v5.15.4/js/solid.js}"
+        integrity="sha384-/BxOvRagtVDn9dJ+JGCtcofNXgQO/CCCVKdMfL115s3gOgQxWaX/tSq5V8dRgsbc"
+        crossorigin="anonymous"></script>
+    <script defer th:src="@{https://use.fontawesome.com/releases/v5.15.4/js/fontawesome.js}"
+        integrity="sha384-dPBGbj4Uoy1OOpM4+aRGfAOc0W37JkROT+3uynUgTHZCHZNMHfGXsmmvYTffZjYO"
+        crossorigin="anonymous"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js}"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" th:src="@{/js/mdb.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/mdb.min.js.map}"></script>
+    <!-- Revenue Chart setup -->
+    <script>
+        //Get month and date
+        var month = document.getElementById("month").getAttribute("data-month");
+        var year = document.getElementById("year").getAttribute("data-year");
+
+        var jsonData_1 = document.getElementById("container-1").getAttribute("data-json-data");
+        var data_1 = JSON.parse(jsonData_1);
+        console.log(data_1);
+        // Create the chart
+        Highcharts.chart('container-1', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                align: 'left',
+                text: 'Số gói mạng bán trong tháng '+month+' năm '+year
+            },
+            subtitle: {
+                align: 'left',
+                text: 'Thông tin được dựa trên tất cả các hợp đồng đã được đăng kí từ ngày 1/'+month+'/'+year
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: 'Số lượt đăng kí'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.f}'
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.f}</b> lượt đăng kí<br/>'
+            },
+            series: [{
+                name: 'Gói mạng',
+                colorByPoint: true,
+                data: Object.entries(data_1).map(([name, value]) => ({ name, y: value }))
+            }]
+        });
+
+        var jsonData_2 = document.getElementById("container-2").getAttribute("data-json-data");
+        var data_2 = JSON.parse(jsonData_2);
+        console.log(data_2);
+        Highcharts.chart('container-2', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Trạng thái các hợp đồng trong tháng '+month+', '+year,
+                align: 'left'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            accessibility: {
+                point: {
+                    valueSuffix: '%'
+                }
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            },
+            series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: Object.entries(data_2).map(([name, value]) => ({ name, y: value }))
+            }]
+        });
+
+        var jsonData_dateSeries = document.getElementById("container-3").getAttribute("data-dateSeries");
+        var dateSeries = JSON.parse(jsonData_dateSeries);
+        var jsonData_unhandledSeries = document.getElementById("container-3").getAttribute("data-unhandledSeries");
+        var unhandledSeries = JSON.parse(jsonData_unhandledSeries);
+        var jsonData_processingSeries = document.getElementById("container-3").getAttribute("data-processingSeries");
+        var processingSeries = JSON.parse(jsonData_processingSeries);
+        var jsonData_gainedSeries = document.getElementById("container-3").getAttribute("data-gainedSeries");
+        var gainedSeries = JSON.parse(jsonData_gainedSeries);
+        Highcharts.chart('container-3', {
+            title: {
+                text: 'Tình hình doanh thu của công ty trong tháng '+month+'/'+year,
+                align: 'left'
+            },
+            yAxis: {
+                title: {
+                    text: 'Số tiền'
+                }
+            },
+            xAxis: {
+                categories: dateSeries
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+            plotOptions: {
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    }
+                }
+            },
+            series: [{
+                name: 'Chưa xử lý',
+                data: unhandledSeries
+            }, {
+                name: 'Đang xử lý',
+                data: processingSeries
+            }, {
+                name: 'Đã thu',
+                data: gainedSeries
+            }],
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+        });
+    </script>
+</body>
+</html>
