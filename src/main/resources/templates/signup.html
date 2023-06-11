@@ -34,7 +34,7 @@
 			<div class="alert alert-info">
 				<span th:text="${phoneDuplicate}"></span>
 			</div>
-		</div>
+		</div> 
 		<form th:if="${signupSuccess==null}" th:action="@{/post_signup}" th:object="${newClient}" method="post"
 			onsubmit="return isValidForm();">
 			<label for="fullname">Họ và tên</label>

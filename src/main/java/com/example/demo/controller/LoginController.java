@@ -1,10 +1,6 @@
 package com.example.demo.controller;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,17 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.demo.dto.PlanDTO;
 import com.example.demo.model.Accountant;
 import com.example.demo.model.Client;
-import com.example.demo.model.Contract;
 import com.example.demo.model.Manager;
 import com.example.demo.model.Staff;
 import com.example.demo.model.Technician;
 import com.example.demo.service.ClientService;
-import com.example.demo.service.PlanDTOService;
 import com.example.demo.service.StaffService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -40,13 +32,6 @@ public class LoginController {
     @Autowired
     private StaffService staffService;
 
-    /*--------------- */
-    @Autowired
-    private PlanDTOService planDTOService;
-    // @Autowired
-    // private ContractService contractService;
-
-    /*--------------- */
     @GetMapping("/login")
     public String login(Model model) {
         Client client = new Client();
@@ -95,7 +80,6 @@ public class LoginController {
         }
         model.addAttribute("client", client);
         model.addAttribute("failedLogin", "Sai thông tin đăng nhập. Yêu cầu đăng nhập lại");
-        // log.info("Null Object");
         return "login";
     }
 
@@ -167,125 +151,11 @@ public class LoginController {
     }
 
     /*--------------------------------------------------------------------------------------- */
-    @GetMapping("/chart")
-    public String showChart(Model model, HttpSession session) throws Exception {
-        LocalDate today = LocalDate.now();
-        int month = today.getMonthValue();
-        int year = today.getYear();
-        // int month = 4;
-        // int year = 2023;
-        model.addAttribute("month", month);
-        model.addAttribute("year", year);
-
-        session.setAttribute("startDate", 1);
-        session.setAttribute("searchMonth", month);
-        session.setAttribute("searchYear", year);
-        // Get plan report
-        List<PlanDTO> dtos = planDTOService.getContractsByMonthAndYear(month, year);
-        int planSum = 0;
-        for (PlanDTO planDTO : dtos) {
-            System.out
-                    .println(planDTO.getPlanName() + ' ' + planDTO.getAmount() + ' ' + planDTO.getLatestRegisterTime());
-            planSum += planDTO.getAmount();
-        }
-        model.addAttribute("planSum", planSum);
-
-        Map<String, Integer> planReport = new LinkedHashMap<>();
-        for (PlanDTO dto : dtos) {
-            planReport.put(dto.getPlanName(), dto.getAmount());
-        }
-        String jsonData_1 = getJsonData1(planReport);
-        log.info(jsonData_1);
-        model.addAttribute("jsonData_1", jsonData_1);
-        session.setAttribute("planData", jsonData_1);
-        // Get contract report
-        Map<String, Float> contractReport = planDTOService.getContractStatusRatio(month, year);
-        model.addAttribute("contractSum", planDTOService.getContractNumberByMonthAndYear(month, year));
-        String jsonData_2 = getJsonData2(contractReport);
-        model.addAttribute("jsonData_2", jsonData_2);
-        session.setAttribute("contractData", jsonData_2);
-        log.info(jsonData_2);
-
-        // Get revenue report
-        List<String> dateString = new ArrayList<String>();
-        List<Long> unhandledRevenue = new ArrayList<>();
-        List<Long> processingRevenue = new ArrayList<>();
-        List<Long> gainedRevenue = new ArrayList<>();
-        List<Contract> contracts = planDTOService.getContractsByTime(month, year);
-        List<LocalDate> dates = PlanDTOService.getDaysInMonthAndYearBeforeOrEqualToday(month, year);
-        long unhandledRevenueSum = 0L, processingRevenueSum = 0L, gainedRevenueSum = 0L;
-        for (LocalDate date : dates) {
-            dateString.add(PlanDTOService.convertFormatDate(date));
-            // int count = 0;
-            long unhandle = 0L, processing = 0L, gained = 0L;
-            for (Contract ct : contracts) {
-                if(PlanDTOService.isTimestampOnDate(ct.getRegisterTime(), date)){
-                    // count++;
-                    if(ct.getStatus()==0){
-                        unhandle += ct.getPlan().getPrice();
-                    }
-                    else if(ct.getStatus()==1||ct.getStatus()==2||ct.getStatus()==3){
-                        processing += ct.getPlan().getPrice();
-
-                    }
-                }
-                if(ct.getStatus()==4){
-                    if(PlanDTOService.isTimestampOnDate(ct.getPayTime(), date)){
-                        gained += ct.getPlan().getPrice();
-
-                    }
-                }
-            }
-            unhandledRevenue.add(unhandle);
-            unhandledRevenueSum += unhandle;
-            processingRevenue.add(processing);
-            processingRevenueSum += processing;
-            gainedRevenue.add(gained);
-            gainedRevenueSum += gained;
-        }
-        model.addAttribute("revenueSum", planDTOService.getRevenueSumByMonthAndYear(month, year));
-        String dateSeries = getJsonDataDate(dateString);
-        model.addAttribute("dateSeries", dateSeries);
-        log.info("Cac ngay: "+ dateSeries);
-        String unhandledSeries = getJsonDataLong(unhandledRevenue);
-        model.addAttribute("unhandledSeries", unhandledSeries);
-        log.info("Chua xu ly: "+ unhandledSeries);
-        String processingSeries = getJsonDataLong(processingRevenue);
-        model.addAttribute("processingSeries", processingSeries);
-        log.info("Dang xu ly: "+ processingSeries);
-        String gainedSeries = getJsonDataLong(gainedRevenue);
-        model.addAttribute("gainedSeries", gainedSeries);
-        log.info("Da thu: "+ gainedSeries);
-        session.setAttribute("unhandledRevenue", unhandledRevenueSum);
-        session.setAttribute("processingRevenueSum", processingRevenueSum);
-        session.setAttribute("gainedRevenueSum", gainedRevenueSum);
-
-        return "manager/statistic";
-    }
-
-    public static String getJsonData1(Map<String, Integer> data) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(data);
-    }
-    public static String getJsonData2(Map<String, Float> data) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(data);
-    }
-    public static String getJsonDataDate(List<String> dateStr) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(dateStr);
-    }
-    public static String getJsonDataLong(List<Long> amounts) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(amounts);
-    }
-
     @PostMapping("/save_chart_image")
     public String getImageURL(@RequestParam("image") String image,
             HttpSession session){
         // log.info("Data Image: "+image);
         session.setAttribute("imageURL", image.split(",")[1]);
         return "redirect:/word/export";
-        
     }
 }
